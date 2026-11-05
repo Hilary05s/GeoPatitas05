@@ -1,0 +1,346 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>GeoPatitas · Santiago Ixcuintla</title>
+  <meta name="description" content="Plataforma ciudadana para reportar perritos en situación de calle en Santiago Ixcuintla, Nayarit.">
+  <meta name="theme-color" content="#3B2A1A">
+
+  <!-- PWA -->
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icons/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="GeoPatitas">
+
+  <!-- Tipografías -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Alfa+Slab+One&family=Rye&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">Saltar al contenido</a>
+
+  <!-- ================= ENCABEZADO ================= -->
+  <header class="site-header">
+    <div class="container header-row">
+      <a class="brand" href="#/inicio" aria-label="GeoPatitas, ir a inicio">
+        <span class="brand-mark" data-icon="paw"></span>
+        <span class="brand-name">GeoPatitas</span>
+      </a>
+      <nav class="main-nav" aria-label="Principal">
+        <a href="#/inicio" data-nav="inicio">Inicio</a>
+        <a href="#/mapa" data-nav="mapa">Explorar mapa</a>
+        <a href="#/reportar" data-nav="reportar">Reportar</a>
+        <a href="#/adopciones" data-nav="adopciones">Adopciones</a>
+        <a href="#/aliados" data-nav="aliados">Veterinarias aliadas</a>
+        <a href="#/nosotros" data-nav="nosotros">Nosotros</a>
+      </nav>
+      <a class="btn btn-primary" href="#/reportar">Reportar un perrito</a>
+    </div>
+  </header>
+
+  <main id="main" tabindex="-1">
+
+    <!-- ================= INICIO ================= -->
+    <section class="view" data-view="inicio" hidden>
+      <div class="container hero">
+        <div class="hero-text">
+          <span class="eyebrow-pill">Plataforma ciudadana · Santiago Ixcuintla</span>
+          <h1 class="h1">Cada patita cuenta, cada reporte puede cambiar una vida</h1>
+          <p class="lead">GeoPatitas conecta a ciudadanos, rescatistas, veterinarias y familias adoptantes en un mapa para ayudar a los perritos en situación de calle.</p>
+          <div class="btn-row">
+            <a class="btn btn-dark btn-lg" href="#/mapa">Explorar mapa</a>
+            <a class="btn btn-primary btn-lg" href="#/reportar">Reportar ahora</a>
+          </div>
+        </div>
+        <div class="photo-ph hero-photo">
+          <span data-icon="paw" class="ph-icon"></span>
+          <span>[Foto de perrito rescatado]</span>
+        </div>
+      </div>
+
+      <div class="stats-band">
+        <div class="container stats">
+          <div class="stat"><span class="stat-num" id="statReported">[N]</span><span>Perritos reportados</span></div>
+          <div class="stat"><span class="stat-num" id="statAttended">[N]</span><span>Casos atendidos</span></div>
+          <div class="stat"><span class="stat-num" id="statWeek">[N]</span><span>Reportes esta semana</span></div>
+        </div>
+      </div>
+
+      <div class="container section">
+        <h2 class="h2 center">Cómo funciona en tres pasos</h2>
+        <div class="grid-3">
+          <article class="card step-card"><span class="step-num">1</span><h3 class="h3">Reporta</h3><p>Cuéntanos qué viste: la foto es opcional y basta con una zona aproximada.</p></article>
+          <article class="card step-card"><span class="step-num">2</span><h3 class="h3">Aparece en el mapa</h3><p>Después de la moderación, tu reporte se muestra como una huella en una zona, sin domicilios exactos.</p></article>
+          <article class="card step-card"><span class="step-num">3</span><h3 class="h3">La comunidad actúa</h3><p>Rescatistas, veterinarias y adoptantes pueden dar seguimiento al caso.</p></article>
+        </div>
+      </div>
+
+      <hr class="rule-double">
+
+      <div class="container section">
+        <div class="section-head">
+          <h2 class="h2">Reportes recientes</h2>
+          <a class="btn btn-outline" href="#/mapa">Ver todos en el mapa</a>
+        </div>
+        <div class="grid-auto" id="recentList"></div>
+      </div>
+
+      <hr class="rule-double">
+
+      <div class="container section">
+        <div class="sponsor-box">
+          <div>
+            <h2 class="h2 h2-sm">Veterinarias y negocios aliados</h2>
+            <p class="muted">[Espacio para logos de patrocinadores]</p>
+          </div>
+          <a class="btn btn-dark" href="#/aliados">Ver aliados</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= MAPA ================= -->
+    <section class="view" data-view="mapa" hidden>
+      <div class="container-wide map-layout">
+        <aside class="map-side">
+          <label class="field">Buscar por colonia o zona
+            <input type="search" id="mapSearch" placeholder="Ej. Centro, Zona norte">
+          </label>
+          <div class="chips" role="group" aria-label="Filtrar por estado" id="mapChips"></div>
+          <p class="muted small" id="mapCount"></p>
+          <div class="report-list" id="mapList"></div>
+        </aside>
+
+        <div class="map" id="map">
+          <div class="map-park p1" aria-hidden="true"></div>
+          <div class="map-park p2" aria-hidden="true"></div>
+          <div class="map-road h r1" aria-hidden="true"></div>
+          <div class="map-road h r2" aria-hidden="true"></div>
+          <div class="map-road v r3" aria-hidden="true"></div>
+          <div class="map-road v r4" aria-hidden="true"></div>
+          <div class="map-river" aria-hidden="true"></div>
+          <span class="map-label" style="left:44%;top:10%" aria-hidden="true">Zona norte</span>
+          <span class="map-label" style="left:50%;top:45%" aria-hidden="true">Centro</span>
+          <span class="map-label" style="left:12%;top:80%" aria-hidden="true">Zona sur</span>
+
+          <div id="mapPins"></div>
+
+          <div class="map-zoom">
+            <button type="button" aria-label="Acercar">+</button>
+            <button type="button" aria-label="Alejar">−</button>
+          </div>
+
+          <div class="map-popup" id="mapPopup" hidden></div>
+
+          <div class="map-legend">
+            <span><i class="dot help"></i>Necesita ayuda</span>
+            <span><i class="dot follow"></i>En seguimiento</span>
+            <span><i class="dot done"></i>Atendido</span>
+          </div>
+          <span class="map-note">Mapa ilustrativo · [aquí va el mapa real]</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= REPORTAR ================= -->
+    <section class="view" data-view="reportar" hidden>
+      <div class="container report-layout" id="reportFormWrap">
+        <form class="card form-card" id="reportForm" novalidate>
+          <h1 class="h1 h1-sm">Reportar un perrito</h1>
+
+          <div class="photo-drop">
+            <div class="photo-drop-text">
+              <strong>Fotografía (opcional)</strong>
+              <span class="muted">No necesitas una foto para reportar.</span>
+            </div>
+            <label class="btn btn-outline">Elegir imagen<input type="file" name="foto" accept="image/*" hidden></label>
+            <label class="btn btn-dark">Tomar foto<input type="file" name="fotoCamara" accept="image/*" capture="environment" hidden></label>
+          </div>
+          <p class="muted small" id="photoName" hidden></p>
+
+          <div class="grid-fields">
+            <label class="field">Nombre (opcional)<input type="text" name="nombre" placeholder="Si lo conoces"></label>
+            <label class="field">Raza aproximada (opcional)<input type="text" name="raza" placeholder="Ej. mestizo"></label>
+            <label class="field">Color<input type="text" name="color" placeholder="Ej. café con blanco"></label>
+            <label class="field">Fecha del avistamiento<input type="date" name="fecha"></label>
+          </div>
+
+          <fieldset class="fieldset">
+            <legend>Tamaño</legend>
+            <div class="radio-row">
+              <label class="radio-pill"><input type="radio" name="tamano" value="Pequeño">Pequeño</label>
+              <label class="radio-pill"><input type="radio" name="tamano" value="Mediano" checked>Mediano</label>
+              <label class="radio-pill"><input type="radio" name="tamano" value="Grande">Grande</label>
+            </div>
+          </fieldset>
+
+          <label class="field">Estado de salud aparente
+            <select name="salud">
+              <option>Parece sano</option><option>Herido</option><option>Enfermo</option>
+              <option>Desnutrido</option><option>Cachorro</option><option>En peligro</option>
+            </select>
+          </label>
+          <label class="field">Características y descripción<textarea name="descripcion" rows="4" placeholder="Collar, cicatrices, comportamiento…"></textarea></label>
+          <label class="field">Tu contacto (opcional, no se publica)<input type="text" name="contacto" placeholder="Teléfono o correo"></label>
+          <input type="hidden" name="zona" id="zoneInput">
+
+          <div class="btn-row">
+            <button type="submit" class="btn btn-primary btn-lg">Enviar reporte</button>
+            <span class="muted small">Tu reporte se revisa antes de publicarse.</span>
+          </div>
+        </form>
+
+        <div class="card zone-card">
+          <h2 class="h2 h2-sm">Ubicación aproximada</h2>
+          <p class="muted small">Toca una zona del mapa. Nunca pidas ni compartas domicilios exactos.</p>
+          <div class="map map-mini" id="zoneMap">
+            <div class="map-road h" style="top:36%;height:12px" aria-hidden="true"></div>
+            <div class="map-road h" style="top:64%;height:12px;transform:rotate(3deg)" aria-hidden="true"></div>
+            <div class="map-road v" style="left:46%;width:12px" aria-hidden="true"></div>
+            <div class="map-river" aria-hidden="true"></div>
+          </div>
+          <p class="zone-text" id="zoneText" aria-live="polite">Aún no eliges una zona</p>
+        </div>
+      </div>
+
+      <div class="container narrow" id="reportSent" hidden>
+        <div class="card success-card">
+          <span class="success-check" data-icon="check"></span>
+          <h1 class="h1 h1-sm">¡Gracias! Tu reporte fue enviado</h1>
+          <p class="muted">El equipo lo revisará y después aparecerá en el mapa con ubicación aproximada.</p>
+          <div class="btn-row center">
+            <a class="btn btn-dark" href="#/mapa">Ver el mapa</a>
+            <button type="button" class="btn btn-outline" id="newReport">Hacer otro reporte</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= FICHA ================= -->
+    <section class="view" data-view="ficha" hidden>
+      <div class="container section-tight" id="fichaContent"></div>
+    </section>
+
+    <!-- ================= ADOPCIONES ================= -->
+    <section class="view" data-view="adopciones" hidden>
+      <div class="container section">
+        <div class="page-head">
+          <h1 class="h1 h1-sm">Adopciones</h1>
+          <p class="muted">Perritos disponibles, publicados por la persona u organización responsable. Datos de demostración.</p>
+        </div>
+        <div class="card filters">
+          <label class="field">Buscar<input type="search" id="dogSearch" placeholder="Nombre o descripción"></label>
+          <label class="field">Tamaño
+            <select id="dogSize"><option value="">Todos</option><option>Pequeño</option><option>Mediano</option><option>Grande</option></select>
+          </label>
+          <label class="field">Edad
+            <select id="dogAge"><option value="">Todas</option><option>Cachorro</option><option>Adulto</option><option>Mayor</option></select>
+          </label>
+          <label class="field">Sexo
+            <select id="dogSex"><option value="">Todos</option><option>Hembra</option><option>Macho</option></select>
+          </label>
+        </div>
+        <div class="grid-auto" id="dogList"></div>
+        <p class="muted center" id="dogEmpty" hidden>No hay perritos con esos filtros.</p>
+      </div>
+    </section>
+
+    <!-- ================= ALIADOS ================= -->
+    <section class="view" data-view="aliados" hidden>
+      <div class="container section">
+        <div class="page-head">
+          <h1 class="h1 h1-sm">Veterinarias y negocios aliados</h1>
+          <p class="muted">Aliados que apoyan a los perritos de Santiago Ixcuintla.</p>
+        </div>
+        <div class="grid-auto grid-wide" id="vetList">
+          <div class="slot-card">
+            <strong>Espacio disponible</strong>
+            <span class="muted small">Tu veterinaria o negocio puede aparecer aquí.</span>
+          </div>
+        </div>
+        <div class="banner">
+          <div>
+            <h2 class="h2 h2-sm">¿Tienes una veterinaria o negocio?</h2>
+            <p>Patrocina la plataforma y date a conocer con quienes ayudan a los perritos.</p>
+          </div>
+          <button type="button" class="btn btn-primary">Quiero ser aliado</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= NOSOTROS ================= -->
+    <section class="view" data-view="nosotros" hidden>
+      <div class="container hero hero-sm">
+        <div class="hero-text">
+          <h1 class="h1">Tecnología al servicio de las patitas</h1>
+          <p class="lead">GeoPatitas es una iniciativa ciudadana que usa un mapa interactivo para visibilizar y apoyar a los perritos en situación de calle de Santiago Ixcuintla.</p>
+        </div>
+        <div class="photo-ph hero-photo hero-photo-sm"><span>[Foto de rescate]</span></div>
+      </div>
+      <div class="container grid-3 section-flush">
+        <article class="card"><h2 class="h3">Misión</h2><p class="muted">[Texto por definir]</p></article>
+        <article class="card"><h2 class="h3">Visión</h2><p class="muted">[Texto por definir]</p></article>
+        <article class="card"><h2 class="h3">Objetivo</h2><p class="muted">[Texto por definir]</p></article>
+      </div>
+      <div class="container section">
+        <h2 class="h2 center">Nuestro equipo</h2>
+        <div class="grid-team" id="teamList"></div>
+      </div>
+      <div class="container section-flush pb">
+        <div class="banner">
+          <div>
+            <h2 class="h2 h2-sm">Organizaciones, veterinarias y aliados</h2>
+            <p>Súmate para atender casos y dar seguimiento en tu zona.</p>
+          </div>
+          <a class="btn btn-primary" href="#/aliados">Quiero ser aliado</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= MODERACIÓN ================= -->
+    <section class="view" data-view="moderacion" hidden>
+      <div class="container section">
+        <div class="page-head">
+          <span class="tag-dark">Solo equipo</span>
+          <h1 class="h1 h1-sm">Panel de moderación</h1>
+          <p class="muted">Revisa cada reporte antes de publicarlo. Elimina falsos, duplicados u ofensivos.</p>
+        </div>
+        <div class="grid-3 counters">
+          <div class="card counter"><span class="muted small">Pendientes</span><span class="counter-num c-help" id="cntPending">0</span></div>
+          <div class="card counter"><span class="muted small">Aprobados</span><span class="counter-num c-done" id="cntApproved">0</span></div>
+          <div class="card counter"><span class="muted small">Eliminados</span><span class="counter-num c-danger" id="cntRemoved">0</span></div>
+        </div>
+        <div class="mod-queue" id="modQueue"></div>
+        <div class="card empty-state" id="modEmpty" hidden>
+          <strong>No hay reportes pendientes</strong>
+          <button type="button" class="btn btn-outline" id="modReset">Restablecer demostración</button>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ================= PIE ================= -->
+  <footer class="site-footer">
+    <div class="container footer-row">
+      <div class="footer-info">
+        <span class="footer-brand">GeoPatitas</span>
+        <span>Santiago Ixcuintla, Nayarit · [correo de contacto] · [teléfono]</span>
+      </div>
+      <div class="footer-links">
+        <a href="#" aria-label="Facebook de GeoPatitas">Facebook</a>
+        <a href="#" aria-label="Instagram de GeoPatitas">Instagram</a>
+        <a href="#" aria-label="WhatsApp de GeoPatitas">WhatsApp</a>
+        <a class="footer-mod" href="#/moderacion">Panel de moderación (equipo)</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/data.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,22 @@
+{
+  "name": "GeoPatitas · Santiago Ixcuintla",
+  "short_name": "GeoPatitas",
+  "description": "Reporta perritos en situación de calle y ayuda a organizar su rescate en Santiago Ixcuintla, Nayarit.",
+  "lang": "es-MX",
+  "start_url": "./index.html#/inicio",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#FBF5EA",
+  "theme_color": "#3B2A1A",
+  "categories": ["social", "lifestyle"],
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ],
+  "shortcuts": [
+    { "name": "Reportar un perrito", "url": "./index.html#/reportar", "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192" }] },
+    { "name": "Explorar mapa", "url": "./index.html#/mapa", "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192" }] }
+  ]
+}
