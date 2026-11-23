@@ -1,0 +1,102 @@
+@import 'tailwindcss';
+
+/* =========================================================
+   GeoPatitas — tokens del tema (Tailwind CSS v4)
+   Valores tomados de ../../css/styles.css (:root).
+   Solo tokens: aquí NO van componentes ni clases propias.
+
+   Cada --color-X genera utilidades como bg-X, text-X, border-X.
+   Ej.: bg-crema, text-tinta, bg-accion text-accion-texto,
+        bg-ayuda-fondo text-ayuda-texto, bg-atendido-pin.
+   ========================================================= */
+@theme {
+  /* ---------- Colores principales ---------- */
+  --color-crema: #fbf5ea;          /* --paper: fondo general */
+  --color-marca: #2e7d5b;          /* --green: verde de marca */
+  --color-accion: #f2a35e;         /* --orange: botón principal */
+  --color-accion-texto: #3a2410;   /* --on-orange: texto sobre naranja */
+  --color-accion-hover: #ee9549;   /* .btn-primary:hover */
+  --color-tinta: #3b2a1a;          /* --ink: títulos y botones oscuros */
+  --color-tinta-oscura: #2b1f14;   /* pie de página y .btn-dark:hover */
+  --color-kraft: #c9b48f;          /* --kraft-line: líneas dobles y bordes de cartel */
+  --color-cartel: #fffbf2;         /* --poster: papel de cartel "SE BUSCA" */
+
+  /* ---------- Estados del caso ---------- */
+  /* Necesita ayuda */
+  --color-ayuda-fondo: #fde3cc;    /* --help-bg */
+  --color-ayuda-texto: #8a3a0c;    /* --help-fg */
+  --color-ayuda-pin: #e8863a;      /* --help-pin (marcador del mapa) */
+  /* En seguimiento */
+  --color-seguimiento-fondo: #dceaf5; /* --follow-bg */
+  --color-seguimiento-texto: #1f4f7a; /* --follow-fg */
+  --color-seguimiento-pin: #2f6b95;   /* --follow-pin */
+  /* Atendido */
+  --color-atendido-fondo: #ddefe3; /* --done-bg */
+  --color-atendido-texto: #1f5a3a; /* --done-fg */
+  --color-atendido-pin: #3e8e63;   /* --done-pin */
+
+  /* ---------- Colores de apoyo ---------- */
+  --color-texto: #24302a;          /* --text: texto normal */
+  --color-gris: #5b6660;           /* --muted */
+  --color-gris-2: #4f5a54;         /* --muted-2 (clase .muted) */
+  --color-sepia: #7a5b36;          /* --sepia */
+  --color-sepia-texto: #5e4b35;    /* --sepia-text */
+  --color-menta: #e7f1ea;          /* --mint: fondos de foto */
+  --color-kraft-suave: #efe6d3;    /* --kraft-soft */
+  --color-kraft-pill: #efe3cb;     /* --kraft-pill */
+  --color-kraft-interior: #e2d4b6; /* --kraft-inner */
+  --color-linea: #cfc4ae;          /* --line: bordes de campos */
+  --color-borde-suave: #ede5d6;    /* borde del encabezado */
+  --color-nav: #4a4a44;            /* enlaces del menú */
+  --color-nav-activo: #e07b2e;     /* --nav-active: subrayado de la página actual */
+  --color-peligro: #b42318;        /* --danger */
+  --color-pie-texto: #e6dccb;      /* texto secundario del pie */
+  --color-pie-borde: #8c7a60;      /* borde del botón de moderación del pie */
+
+  /* ---------- Tipografías ---------- */
+  --font-sans: 'Inter', system-ui, sans-serif;      /* todo el texto (font-sans) */
+  --font-titulo: 'Alfa Slab One', Georgia, serif;   /* títulos (font-titulo) */
+  --font-cartel: 'Rye', Georgia, serif;             /* SOLO encabezados "SE BUSCA" (font-cartel) */
+
+  /* ---------- Radios ---------- */
+  --radius-tarjeta: 20px;          /* --radius: rounded-tarjeta */
+  --radius-boton: 12px;            /* --radius-sm: rounded-boton */
+
+  /* ---------- Ancho del contenido ---------- */
+  --container-sitio: 1240px;       /* .container: max-w-sitio */
+  --container-sitio-ancho: 1320px; /* .container-wide: max-w-sitio-ancho */
+}
+
+/* Estilos base equivalentes a los de css/styles.css (body, enlaces, foco). */
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+  body {
+    background-color: var(--color-crema);
+    color: var(--color-texto);
+    font-family: var(--font-sans);
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+  a {
+    color: var(--color-marca);
+  }
+  a:hover {
+    color: var(--color-tinta);
+  }
+  :focus-visible {
+    outline: 3px solid var(--color-accion);
+    outline-offset: 2px;
+  }
+  button {
+    cursor: pointer;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
+}
