@@ -6,13 +6,23 @@
 # También funciona en los clientes HTTP de JetBrains.
 #
 # Antes: XAMPP con MySQL encendido y `pnpm dev` en api/.
+# Con sql/datos-prueba.sql cargado (solo en local) hay datos para probar.
+#
+# Secciones:
+#   1 · Estado y zonas
+#   2 · Lecturas públicas (reportes, seguimiento, adopciones, aliados, estadísticas)
+#   3 · Crear reporte (JSON o con foto)
+#   4 · Login de moderadores  ← pon tu correo y contraseña en @correo / @password
+#   5 · Moderación (pendientes, aprobar, eliminar, cambiar estado)
+#
+# Detalle de cada endpoint: web/docs/API.md
 ###############################################################
 
 @base = http://localhost:3000/api
 
 
 ###############################################################
-# FASE 1 · Estado y zonas
+# 1 · Estado y zonas
 ###############################################################
 
 ### Estado de la API
@@ -32,7 +42,7 @@ Content-Type: application/json
 
 
 ###############################################################
-# FASE 2 · Lecturas públicas
+# 2 · Lecturas públicas
 # (con api/sql/datos-prueba.sql cargado hay datos para probar)
 ###############################################################
 
@@ -77,7 +87,7 @@ GET {{base}}/estadisticas
 
 
 ###############################################################
-# FASE 3 · Crear reporte (queda PENDIENTE de moderación)
+# 3 · Crear reporte (queda PENDIENTE de moderación)
 # Límites: 5 cada 10 min por IP y MAX_REPORTES_POR_IP_DIA en 24 h.
 # Si te sale 429 mientras pruebas, reinicia `pnpm dev`.
 ###############################################################
@@ -156,7 +166,7 @@ Content-Type: application/json
 
 
 ###############################################################
-# FASE 4 · Login de moderadores
+# 4 · Login de moderadores
 # Antes: crea un moderador con `pnpm crear-moderador` y pon aquí
 # su correo y contraseña (NO subas este archivo con datos reales).
 # Límite: 5 intentos fallidos cada 15 min por IP.
@@ -196,8 +206,8 @@ Content-Type: application/json
 
 
 ###############################################################
-# FASE 5 · Moderación (todas requieren el token de la Fase 4)
-# Ejecuta primero "Iniciar sesión" de la Fase 4 para llenar {{token}}.
+# 5 · Moderación (todas requieren el token de la sección 4)
+# Ejecuta primero "Iniciar sesión" (sección 4) para llenar {{token}}.
 # Con datos-prueba.sql: 9007 y 9008 están pendientes.
 ###############################################################
 
