@@ -34,9 +34,31 @@ const esquema = z.object({
   // Número de proxies delante de la API (0 en local). Necesario para que el
   // límite de peticiones vea la IP real cuando se publique detrás de un proxy.
   TRUST_PROXY: z.coerce.number().int().min(0).default(0),
+
+  // Anti-spam: la IP de quien reporta se guarda como hash con esta sal secreta
+  IP_HASH_SALT: z.string().min(16, 'Debe tener al menos 16 caracteres (ver .env.example)'),
+  // Máximo de reportes por IP en 24 horas (se cuenta en la base de datos)
+  MAX_REPORTES_POR_IP_DIA: z.coerce.number().int().min(1).default(10),
+
+  // Fotos (opcional): sin las tres credenciales, los reportes se crean sin foto
+  CLOUDINARY_CLOUD_NAME: z.string().optional(),
+  CLOUDINARY_API_KEY: z.string().optional(),
+  CLOUDINARY_API_SECRET: z.string().optional(),
+  CLOUDINARY_FOLDER: z.string().min(1).default('geopatitas'),
+}).superRefine((valores, ctx) => {
+  // Cloudinary: o las tres credenciales o ninguna (evita configuraciones a medias)
+  const claves = ['CLOUDINARY_CLOUD_NAME', 'CLOUDINARY_API_KEY', 'CLOUDINARY_API_SECRET'] as const;
+  const llenas = claves.filter((clave) => valores[clave]);
+  if (llenas.length > 0 && llenas.length < claves.length) {
+    for (const clave of claves.filter((c) => !valores[c])) {
+      ctx.addIssue({ code: 'custom', path: [clave], message: 'Falta: llena las tres variables de Cloudinary o deja las tres vacías' });
+    }
+  }
 });
 
-const resultado = esquema.safeParse(process.env);
+// Las variables vacías del .env (CLOUDINARY_API_KEY=) cuentan como no definidas
+const entorno = Object.fromEntries(Object.entries(process.env).filter(([, valor]) => valor !== ''));
+const resultado = esquema.safeParse(entorno);
 
 if (!resultado.success) {
   console.error('❌ Configuración inválida en el archivo .env:');

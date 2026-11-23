@@ -1,5 +1,6 @@
 import { crearApp } from './app.js';
 import { pool, verificarConexion } from './lib/bd.js';
+import { fotosHabilitadas } from './lib/cloudinary.js';
 import { config } from './lib/config.js';
 
 // Punto de arranque: crea la app, enciende el servidor y revisa la base.
@@ -8,6 +9,11 @@ const app = crearApp();
 const servidor = app.listen(config.PORT, () => {
   console.log(`🐾 GeoPatitas API en http://localhost:${config.PORT}/api (${config.NODE_ENV})`);
   console.log(`   CORS permitido para: ${config.CORS_ORIGIN.join(', ')}`);
+  if (fotosHabilitadas) {
+    console.log(`📷 Fotos: Cloudinary activo (carpeta "${config.CLOUDINARY_FOLDER}")`);
+  } else {
+    console.warn('⚠️  Fotos: faltan las credenciales de Cloudinary en el .env. Los reportes se crearán SIN foto.');
+  }
   void verificarConexion();
 });
 

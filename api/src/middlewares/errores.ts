@@ -1,8 +1,10 @@
 import type { ErrorRequestHandler, RequestHandler } from 'express';
+import { MulterError } from 'multer';
 import { ZodError } from 'zod';
 
 import { esProduccion } from '../lib/config.js';
 import { ErrorHttp } from '../lib/errores.js';
+import { MB_MAXIMOS_FOTO } from './subida.js';
 
 /** 404 para cualquier ruta que no exista. Va después de montar todas las rutas. */
 export const rutaNoEncontrada: RequestHandler = (req, res) => {
@@ -31,7 +33,22 @@ export const manejadorErrores: ErrorRequestHandler = (error, req, res, next) => 
 
   // Errores esperados lanzados por los controladores
   if (error instanceof ErrorHttp) {
-    res.status(error.status).json({ mensaje: error.message });
+    res.status(error.status).json(error.campos ? { mensaje: error.message, campos: error.campos } : { mensaje: error.message });
+    return;
+  }
+
+  // Errores de multer al recibir la foto
+  if (error instanceof MulterError) {
+    const mensajes: Partial<Record<MulterError['code'], [number, string]>> = {
+      LIMIT_FILE_SIZE: [413, `La foto pesa más de ${MB_MAXIMOS_FOTO} MB`],
+      LIMIT_FILE_COUNT: [400, 'Solo se permite una foto por reporte'],
+      LIMIT_UNEXPECTED_FILE: [400, 'La foto debe enviarse en el campo "foto" y solo una'],
+      LIMIT_FIELD_VALUE: [400, 'Uno de los campos de texto es demasiado largo'],
+      LIMIT_FIELD_COUNT: [400, 'El formulario tiene demasiados campos'],
+      LIMIT_PART_COUNT: [400, 'El formulario tiene demasiadas partes'],
+    };
+    const [status, mensaje] = mensajes[error.code] ?? [400, 'No se pudo procesar el formulario'];
+    res.status(status).json({ mensaje });
     return;
   }
 
@@ -39,6 +56,11 @@ export const manejadorErrores: ErrorRequestHandler = (error, req, res, next) => 
   if (error instanceof ZodError) {
     const campos: Record<string, string> = {};
     for (const problema of error.issues) {
+      // Campos que no se aceptan (p. ej. lat, lng): se marca cada uno
+      if (problema.code === 'unrecognized_keys') {
+        for (const clave of problema.keys) campos[clave] ??= 'Campo no permitido';
+        continue;
+      }
       const campo = problema.path.join('.') || '_';
       campos[campo] ??= problema.message;
     }

@@ -74,3 +74,82 @@ GET {{base}}/aliados?tipo=veterinaria
 
 ### Cifras del inicio
 GET {{base}}/estadisticas
+
+
+###############################################################
+# FASE 3 · Crear reporte (queda PENDIENTE de moderación)
+# Límites: 5 cada 10 min por IP y MAX_REPORTES_POR_IP_DIA en 24 h.
+# Si te sale 429 mientras pruebas, reinicia `pnpm dev`.
+###############################################################
+
+### Crear reporte sin foto (JSON). Cambia la fecha por una de este año.
+POST {{base}}/reportes
+Content-Type: application/json
+
+{
+  "zona_id": 1,
+  "nombre": "Firulais",
+  "raza_aprox": "Mestizo",
+  "color": "Café con blanco",
+  "tamano": "mediano",
+  "es_cachorro": false,
+  "salud": "herido",
+  "descripcion": "Collar azul, cojea de la pata trasera.",
+  "fecha_avistamiento": "2026-11-22",
+  "contacto": "555-000-0000"
+}
+
+### Crear reporte CON foto (multipart). La foto es opcional; JPG, PNG o WebP, máx. 5 MB.
+# Sin credenciales de Cloudinary se crea sin foto y la respuesta trae "aviso".
+POST {{base}}/reportes
+Content-Type: multipart/form-data; boundary=GeoPatitas
+
+--GeoPatitas
+Content-Disposition: form-data; name="zona_id"
+
+2
+--GeoPatitas
+Content-Disposition: form-data; name="color"
+
+Negro
+--GeoPatitas
+Content-Disposition: form-data; name="tamano"
+
+grande
+--GeoPatitas
+Content-Disposition: form-data; name="salud"
+
+desnutrido
+--GeoPatitas
+Content-Disposition: form-data; name="es_cachorro"
+
+false
+--GeoPatitas
+Content-Disposition: form-data; name="fecha_avistamiento"
+
+2026-11-22
+--GeoPatitas
+Content-Disposition: form-data; name="foto"; filename="perrito.png"
+Content-Type: image/png
+
+< ../icons/icon-512.png
+--GeoPatitas--
+
+### Coordenadas exactas → 400 (lat y lng no se aceptan nunca)
+POST {{base}}/reportes
+Content-Type: application/json
+
+{
+  "zona_id": 1, "color": "Café", "tamano": "mediano", "salud": "sano",
+  "fecha_avistamiento": "2026-11-22",
+  "lat": 21.8123, "lng": -105.2087
+}
+
+### Datos inválidos → 400 con el detalle por campo
+POST {{base}}/reportes
+Content-Type: application/json
+
+{
+  "zona_id": 99, "color": "", "tamano": "chico", "salud": "sano",
+  "fecha_avistamiento": "2099-01-01"
+}
