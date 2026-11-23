@@ -17,7 +17,7 @@ React + TypeScript, Tailwind (`font-cartel` para "SE BUSCA HOGAR", `bg-cartel`, 
 
 | | Método | Ruta | Para qué |
 |---|---|---|---|
-| ⏳ | GET | `/api/adopciones` | Adopciones públicas (vista `v_adopciones_publicas` → `AdopcionPublica[]`). Filtros propuestos: `?tamano=&edad=&sexo=&q=` |
+| ✅ | GET | `/api/adopciones` | Adopciones públicas → `AdopcionPublica[]`. Filtros: `?tamano=&edad=&sexo=`. Paginado: `?limite=` (máx. 100) `&pagina=`; total en la cabecera `X-Total-Count`. **No hay búsqueda por texto**: el buscador "Nombre o descripción" filtra en el navegador |
 | ⏳ | GET | `/api/adopciones/:id` | Detalle y contacto del responsable para "Conocer más" (por definir qué datos se muestran) |
 | ⏳ | POST | `/api/adopciones` | Publicar un perrito en adopción (queda `pendiente` de moderación). Por definir quién puede publicar |
 

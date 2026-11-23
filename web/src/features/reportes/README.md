@@ -13,15 +13,21 @@ Formulario para que cualquier persona reporte un perrito **sin crear cuenta**:
 
 ## Tecnologías
 
-React + TypeScript, Tailwind, Leaflet + react-leaflet (mini mapa de zonas; ver [docs/MAPA.md](../../../docs/MAPA.md)), `src/lib/api.ts` (`api.post` con JSON, y con `FormData` para la foto) y el servicio de fotos propuesto, Cloudinary (ver [docs/STACK.md](../../../docs/STACK.md)).
+React + TypeScript, Tailwind, Leaflet + react-leaflet (mini mapa de zonas; ver [docs/MAPA.md](../../../docs/MAPA.md)) y `src/lib/api.ts` (`api.post` con `FormData` cuando hay foto, o con un objeto si no la hay). La API se encarga de procesar la foto y subirla a Cloudinary: el frontend solo la manda junto con el reporte.
 
 ## Endpoints de la API
 
 | | Método | Ruta | Para qué |
 |---|---|---|---|
 | ✅ | GET | `/api/zonas` | Zonas para elegir → `Zona[]` |
-| ⏳ | POST | `/api/fotos` | Subir la foto (`multipart/form-data`) → `{ foto_url, foto_id }` |
-| ⏳ | POST | `/api/reportes` | Crear el reporte (queda `pendiente`) → `{ id, folio }` |
+| ✅ | POST | `/api/reportes` | Crear el reporte, **con la foto en el mismo envío** (`multipart/form-data`, campo `foto`) o sin foto (JSON). Queda `pendiente` → `{ id, folio, estado_moderacion, foto_guardada, mensaje, aviso? }` |
+
+Ya **no** existe un endpoint aparte para subir fotos. Campos, límites y errores: [docs/API.md → POST /api/reportes](../../../docs/API.md).
+
+```ts
+const datos = new FormData(formulario);   // con <input type="file" name="foto">
+const r = await api.post<{ id: number; folio: string; aviso?: string }>('/reportes', datos);
+```
 
 ## Diseño de referencia
 
@@ -35,5 +41,10 @@ React + TypeScript, Tailwind, Leaflet + react-leaflet (mini mapa de zonas; ver [
   - Tamaño: `pequeno | mediano | grande`.
   - Salud: `sano | herido | enfermo | desnutrido | en_peligro`.
   - En el diseño, **"Cachorro"** aparece como opción de salud, pero en la base es el campo aparte `es_cachorro` (0/1). Conviene que sea una casilla separada; coméntalo con quien diseña.
-- 🔒 **Quitar los datos GPS/EXIF de la foto** antes de subirla (ver [docs/REGLAS.md](../../../docs/REGLAS.md)).
-- 🔒 Nunca pedir domicilio ni ubicación exacta. Solo `zona_id`.
+- **Foto:**
+  - Formatos JPG, PNG o WebP, de máximo 5 MB: usa `accept="image/jpeg,image/png,image/webp"`.
+  - **HEIC no se acepta** (responde `415`). Safari en iPhone lo convierte a JPEG al subir.
+- 🔒 **La API ya quita los datos GPS/EXIF** de la foto antes de guardarla. Reducirla también en el navegador es opcional, pero ahorra datos móviles (ver [docs/REGLAS.md](../../../docs/REGLAS.md)).
+- Si la respuesta trae `aviso`, muéstralo: por ejemplo, cuando la foto no se pudo guardar y el reporte se envió sin ella.
+- Errores `400` con `campos`: úsalos para marcar en rojo cada campo del formulario.
+- 🔒 Nunca pedir domicilio ni ubicación exacta. Solo `zona_id`: la API rechaza `lat`, `lng` o cualquier campo extra.

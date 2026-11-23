@@ -40,30 +40,44 @@ cd GeoPatitas05
 
 ## 2. API (`api/`)
 
+> La guía completa de la API (todas las variables, seguridad, producción y problemas comunes) está en **[api/README.md](../../api/README.md)**. Aquí va lo mínimo para correrla en tu computadora.
+
 ```bash
 cd api
 pnpm install
+cp .env.example .env      # en PowerShell: Copy-Item .env.example .env
 ```
 
-Crea el archivo `api/.env` (no se sube a git) con los datos de tu MySQL. Con XAMPP normalmente quedan así:
+Abre `api/.env` (no se sube a git) y llena **dos variables obligatorias**. Sin ellas, la API no arranca:
 
-```env
-DB_HOST=localhost
-DB_PORT=3306
-DB_USER=root
-DB_PASSWORD=
-DB_NAME=geopatitas
+| Variable | Qué poner |
+|---|---|
+| `JWT_SECRET` | Un texto aleatorio de 32 caracteres o más |
+| `IP_HASH_SALT` | Otro texto aleatorio, distinto al anterior |
+
+Para generar cada uno, ejecuta este comando (una vez por variable) y copia el resultado:
+
+```bash
+node -e "console.log(require('crypto').randomBytes(48).toString('hex'))"
 ```
+
+Las variables de la base (`DB_HOST`, `DB_USER`, `DB_PASSWORD`…) ya vienen con los valores normales de XAMPP. Cámbialas solo si tu MySQL tiene otra contraseña o puerto. Cloudinary es opcional: sin él, los reportes se guardan sin foto.
 
 Enciende la API:
 
 ```bash
-pnpm tsx src/index.ts
+pnpm dev
 ```
 
-Revisa que funcione en http://localhost:3000/api: debe responder `{"mensaje":"GeoPatitas API funcionando"}`. En http://localhost:3000/api/zonas deben salir las 5 zonas.
+En la consola debe salir `🐾 GeoPatitas API en http://localhost:3000/api` y `✅ Conectado a MySQL`. Revisa que funcione en http://localhost:3000/api: debe responder `{"mensaje":"GeoPatitas API funcionando"}`. En http://localhost:3000/api/zonas deben salir las 5 zonas.
 
 > Deja esta terminal abierta. Para apagar la API usa `Ctrl + C`.
+
+**Si vas a trabajar en el panel de moderación**, crea tu usuario de moderador (pide nombre, correo y contraseña):
+
+```bash
+pnpm crear-moderador
+```
 
 ## 3. Frontend (`web/`)
 
@@ -126,8 +140,11 @@ web/
 | Problema | Solución |
 |---|---|
 | `ECONNREFUSED` o "No se pudo conectar con la API" | La API no está encendida (paso 2) o MySQL está apagado en XAMPP |
-| La API marca un error de acceso a MySQL | Revisa el usuario y la contraseña en `api/.env` |
+| La API dice `❌ Configuración inválida en el archivo .env` | Falta `JWT_SECRET` o `IP_HASH_SALT` en `api/.env` (paso 2). El mensaje dice cuál |
+| La API dice `⚠️ No se pudo conectar a MySQL (ER_ACCESS_DENIED_ERROR)` | Revisa `DB_USER` y `DB_PASSWORD` en `api/.env` |
+| La API responde `503` | MySQL está apagado en XAMPP |
 | `Table 'geopatitas.zonas' doesn't exist` | No importaste `api/sql/geopatitas.sql` (paso 1) |
 | El puerto 3306 está ocupado | Hay otro MySQL corriendo. Ciérralo o cambia el puerto en XAMPP y en `DB_PORT` |
-| Cambié `.env` y no pasa nada | Reinicia `pnpm dev`, porque Vite solo lee `.env` al arrancar |
+| Cambié `.env` y no pasa nada | Reinicia `pnpm dev` (en `web/` o en `api/`, según el `.env` que cambiaste): los dos solo leen `.env` al arrancar |
+| Más problemas de la API | Ver la tabla de [api/README.md](../../api/README.md#11-problemas-comunes) |
 | Las fuentes no cargan | Se descargan de Google Fonts: revisa tu conexión a internet |

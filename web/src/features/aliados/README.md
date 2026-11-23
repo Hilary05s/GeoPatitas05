@@ -17,7 +17,7 @@ React + TypeScript, Tailwind y `src/lib/api.ts`.
 
 | | Método | Ruta | Para qué |
 |---|---|---|---|
-| ⏳ | GET | `/api/aliados` | Aliados activos con patrocinio vigente → `Aliado[]` |
+| ✅ | GET | `/api/aliados` | Aliados activos con patrocinio vigente; primero las veterinarias → `Aliado[]`. Filtro opcional: `?tipo=veterinaria\|negocio` |
 | ⏳ | POST | `/api/avisos` | "Quiero ser aliado" (`tipo: 'aliado'`, `contacto`, `mensaje`) |
 
 ## Diseño de referencia

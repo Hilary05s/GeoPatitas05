@@ -22,8 +22,8 @@ React + TypeScript, Tailwind, React Router (`useParams` para leer el `:id`, que 
 
 | | Método | Ruta | Para qué |
 |---|---|---|---|
-| ⏳ | GET | `/api/reportes/:id` | Un reporte aprobado → `ReportePublico` (404 si no existe o no está aprobado) |
-| ⏳ | GET | `/api/reportes/:id/seguimiento` | Historial del caso → `Seguimiento[]` (sin `moderador_id`) |
+| ✅ | GET | `/api/reportes/:id` | Un reporte aprobado → `ReportePublico` (404 si no existe o no está aprobado) |
+| ✅ | GET | `/api/reportes/:id/seguimiento` | Historial del caso, del más antiguo al más nuevo → `SeguimientoPublico[]` (sin `moderador_id`). Su `nota` la escribe el equipo y es pública |
 | ⏳ | POST | `/api/avisos` | "Quiero ayudar" (`tipo: 'ayuda'`) e "Informar que ya fue atendido" (`tipo: 'atendido'`) |
 
 ## Diseño de referencia

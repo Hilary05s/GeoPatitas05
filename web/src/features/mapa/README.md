@@ -20,8 +20,11 @@ React + TypeScript, Tailwind, **Leaflet + react-leaflet** sobre **OpenStreetMap*
 | | Método | Ruta | Para qué |
 |---|---|---|---|
 | ✅ | GET | `/api/zonas` | Zonas con su centro (`lat_centro`, `lng_centro`) → `Zona[]` |
-| ⏳ | GET | `/api/reportes` | Reportes aprobados con su zona y las coordenadas del centro de la zona → `ReportePublico[]`. Filtros propuestos: `?estado_caso=&zona_id=&q=` |
+| ✅ | GET | `/api/reportes` | Reportes aprobados con su zona y las coordenadas del centro de la zona → `ReportePublico[]`. Filtros: `?estado=necesita_ayuda\|en_seguimiento\|atendido&zona=<id>`. Paginado: `?limite=` (máx. 100) `&pagina=`; el total viene en la cabecera `X-Total-Count` |
 | ⏳ | GET | `/api/zonas/resumen` | Conteo por zona (vista `v_reportes_por_zona`); opcional, para pintar zonas |
+
+- **El buscador por colonia o zona** no tiene filtro de texto en la API: busca en las zonas de `/api/zonas` y filtra con `?zona=<id>`, o filtra en el navegador por `reporte.zona`.
+- **Para el mapa necesitas todos los reportes:** pide `?limite=100` y, si `X-Total-Count` es mayor, las páginas siguientes.
 
 ## Diseño de referencia
 
