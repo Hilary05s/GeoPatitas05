@@ -21,10 +21,22 @@ cd GeoPatitas05
 ## 1. Base de datos (XAMPP)
 
 1. Abre el **XAMPP Control Panel** y presiona **Start** en **MySQL**. Si quieres usar phpMyAdmin, inicia también **Apache**.
-2. **Solo la primera vez:** importa la base.
-   - Entra a http://localhost/phpmyadmin.
-   - Abre la pestaña **Importar**, elige `api/sql/geopatitas.sql` y presiona **Importar**.
-   - Se crea la base `geopatitas` con sus tablas, vistas y 5 zonas de ejemplo.
+2. **Solo la primera vez:** importa la base. Los scripts de `api/sql/` se ejecutan **en este orden**:
+
+   | Orden | Archivo | Qué hace |
+   |---|---|---|
+   | 1 | `api/sql/geopatitas.sql` | Crea la base `geopatitas` con sus tablas, vistas y 5 zonas de ejemplo |
+   | 2 | `api/sql/002-folio-vista.sql` | Corrige el folio de la vista `v_reportes_publicos` para que no se recorte con ids de 5 dígitos o más |
+
+   - **phpMyAdmin:** entra a http://localhost/phpmyadmin, abre la pestaña **Importar**, elige el archivo 1 y presiona **Importar**. Repite con el archivo 2.
+   - **Terminal** (desde la raíz del repositorio; si tu usuario de MySQL tiene contraseña, agrega `-p`):
+     ```bash
+     C:/xampp/mysql/bin/mysql.exe -u root < api/sql/geopatitas.sql
+     C:/xampp/mysql/bin/mysql.exe -u root geopatitas < api/sql/002-folio-vista.sql
+     ```
+   - ¿Ya tenías la base importada de antes? Solo ejecuta el archivo 2.
+
+   > Si en el futuro aparece un `003-….sql`, se ejecuta después del 002, y así sucesivamente.
 
 ## 2. API (`api/`)
 
