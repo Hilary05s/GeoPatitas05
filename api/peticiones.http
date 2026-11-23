@@ -29,3 +29,48 @@ POST {{base}}/zonas
 Content-Type: application/json
 
 { "esto no es": json valido }
+
+
+###############################################################
+# FASE 2 · Lecturas públicas
+# (con api/sql/datos-prueba.sql cargado hay datos para probar)
+###############################################################
+
+### Reportes aprobados (más nuevos primero). Total en la cabecera X-Total-Count
+GET {{base}}/reportes
+
+### Filtrar por estado del caso
+GET {{base}}/reportes?estado=necesita_ayuda
+
+### Filtrar por zona y paginar
+GET {{base}}/reportes?zona=2&limite=1&pagina=2
+
+### Filtro inválido → 400 con el detalle de cada campo
+GET {{base}}/reportes?estado=perdido&limite=500
+
+### Un reporte aprobado
+GET {{base}}/reportes/9001
+
+### Reporte pendiente o eliminado → 404 (no es público)
+GET {{base}}/reportes/9007
+
+### Id inválido → 400
+GET {{base}}/reportes/abc
+
+### Seguimiento del caso (línea de tiempo)
+GET {{base}}/reportes/9005/seguimiento
+
+### Adopciones disponibles
+GET {{base}}/adopciones
+
+### Adopciones filtradas
+GET {{base}}/adopciones?edad=cachorro&sexo=hembra
+
+### Aliados vigentes
+GET {{base}}/aliados
+
+### Solo veterinarias
+GET {{base}}/aliados?tipo=veterinaria
+
+### Cifras del inicio
+GET {{base}}/estadisticas

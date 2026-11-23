@@ -21,6 +21,7 @@ export function crearApp() {
       origin: config.CORS_ORIGIN, // solo los orígenes de CORS_ORIGIN
       methods: ['GET', 'POST', 'PATCH', 'OPTIONS'],
       allowedHeaders: ['Content-Type', 'Authorization'],
+      exposedHeaders: ['X-Total-Count'], // total para paginar listas
       maxAge: 600,
     }),
   );
