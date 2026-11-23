@@ -1,23 +1,23 @@
-import { pool } from './bd.js';
-import express from 'express';
-import cors from 'cors';
+import { crearApp } from './app.js';
+import { pool, verificarConexion } from './lib/bd.js';
+import { config } from './lib/config.js';
 
-const app = express();
-app.use(cors());      // permite que el frontend le pida datos a la API     
-const PORT = 3000;              // puerto donde escuchará
+// Punto de arranque: crea la app, enciende el servidor y revisa la base.
+const app = crearApp();
 
-// Ruta: cuando alguien entre a /api, responde con un JSON
-app.get('/api', (req, res) => {
-    res.json({ mensaje: 'GeoPatitas API funcionando' });
+const servidor = app.listen(config.PORT, () => {
+  console.log(`🐾 GeoPatitas API en http://localhost:${config.PORT}/api (${config.NODE_ENV})`);
+  console.log(`   CORS permitido para: ${config.CORS_ORIGIN.join(', ')}`);
+  void verificarConexion();
 });
 
-app.get('/api/zonas', async (req, res) => {
-    const [filas] = await pool.query('SELECT * FROM zonas');
-    res.json(filas);
-});
-
-
-// Enciende el servidor y lo deja escuchando peticiones
-app.listen(PORT, () => {
-    console.log(`Servidor en http://localhost:${PORT}`);
-});
+// Apagado ordenado (Ctrl + C o el hosting deteniendo el proceso)
+function apagar(senal: string) {
+  console.log(`\n${senal} recibido. Cerrando la API…`);
+  servidor.close(() => {
+    void pool.end().finally(() => process.exit(0));
+  });
+  setTimeout(() => process.exit(1), 5000).unref();
+}
+process.on('SIGINT', () => apagar('SIGINT'));
+process.on('SIGTERM', () => apagar('SIGTERM'));
