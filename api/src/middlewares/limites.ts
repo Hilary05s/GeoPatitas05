@@ -26,3 +26,16 @@ export const limiteReportes = rateLimit({
   legacyHeaders: false,
   message: { mensaje: 'Enviaste varios reportes seguidos. Espera unos minutos para enviar otro.' },
 });
+
+/**
+ * POST /api/auth/login: 5 intentos FALLIDOS cada 15 minutos por IP
+ * (los inicios de sesión correctos no cuentan). Frena ataques de fuerza bruta.
+ */
+export const limiteLogin = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  limit: 5,
+  skipSuccessfulRequests: true,
+  standardHeaders: 'draft-8',
+  legacyHeaders: false,
+  message: { mensaje: 'Demasiados intentos de inicio de sesión. Espera 15 minutos.' },
+});

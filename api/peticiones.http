@@ -153,3 +153,43 @@ Content-Type: application/json
   "zona_id": 99, "color": "", "tamano": "chico", "salud": "sano",
   "fecha_avistamiento": "2099-01-01"
 }
+
+
+###############################################################
+# FASE 4 · Login de moderadores
+# Antes: crea un moderador con `pnpm crear-moderador` y pon aquí
+# su correo y contraseña (NO subas este archivo con datos reales).
+# Límite: 5 intentos fallidos cada 15 min por IP.
+###############################################################
+
+@correo = tu-correo@ejemplo.com
+@password = tu-contraseña
+
+### Iniciar sesión → guarda el token para las siguientes peticiones
+# @name login
+POST {{base}}/auth/login
+Content-Type: application/json
+
+{
+  "correo": "{{correo}}",
+  "password": "{{password}}"
+}
+
+###
+@token = {{login.response.body.token}}
+
+### ¿Quién soy? (verifica que el token siga siendo válido)
+GET {{base}}/auth/yo
+Authorization: Bearer {{token}}
+
+### Sin token → 401
+GET {{base}}/auth/yo
+
+### Credenciales incorrectas → 401 (mismo mensaje exista o no el correo)
+POST {{base}}/auth/login
+Content-Type: application/json
+
+{
+  "correo": "nadie@ejemplo.com",
+  "password": "Incorrecta123"
+}

@@ -35,6 +35,13 @@ const esquema = z.object({
   // límite de peticiones vea la IP real cuando se publique detrás de un proxy.
   TRUST_PROXY: z.coerce.number().int().min(0).default(0),
 
+  // Login de moderadores (JWT)
+  JWT_SECRET: z.string().min(32, 'Debe tener al menos 32 caracteres (ver .env.example)'),
+  JWT_EXPIRES_IN: z
+    .string()
+    .regex(/^\d+[smhd]$/, 'Usa un número seguido de s, m, h o d (ej. 8h)')
+    .default('8h'),
+
   // Anti-spam: la IP de quien reporta se guarda como hash con esta sal secreta
   IP_HASH_SALT: z.string().min(16, 'Debe tener al menos 16 caracteres (ver .env.example)'),
   // Máximo de reportes por IP en 24 horas (se cuenta en la base de datos)
