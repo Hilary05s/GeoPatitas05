@@ -14,7 +14,7 @@
 | Mapa | Leaflet + react-leaflet + OpenStreetMap | ✅ instalado (sin componentes todavía) |
 | API | Node.js + Express 5 + TypeScript | ✅ en `api/` (en desarrollo) |
 | Base de datos | MySQL / MariaDB (XAMPP en local) | ✅ base `geopatitas` |
-| Fotos | Cloudinary | 🟡 propuesto |
+| Fotos | Cloudinary, subidas desde la API | ✅ integrado en la API (falta poner las credenciales) |
 | Login de moderadores | bcrypt + JWT | 🟡 propuesto |
 | Hosting del frontend | Vercel | 🟡 propuesto |
 | Hosting de API y MySQL | — | ⚪ por definir |
@@ -70,14 +70,21 @@ La propuesta de uso está en [MAPA.md](MAPA.md).
 **Para qué:** guardar zonas, reportes, seguimiento, adopciones, aliados, avisos y moderadores.
 **Por qué:** XAMPP ya trae MySQL y phpMyAdmin para trabajar en local sin instalar nada más. Las **vistas** (`v_reportes_publicos`, `v_estadisticas`, …) ya filtran los datos aprobados y quitan los privados.
 
-### Fotos: Cloudinary (propuesto)
+### Fotos: Cloudinary (subidas desde la API)
 **Para qué:** guardar las fotos de los reportes y las adopciones, y entregarlas optimizadas.
 **Por qué:**
 - Tiene plan gratuito suficiente para el proyecto.
 - Redimensiona y comprime solo, así las fotos cargan rápido con datos móviles.
 - Devuelve una URL y un id que encajan con las columnas `foto_url` y `foto_id` que ya tiene la base.
 
-**Por decidir:** si la foto se sube desde la API (más seguro, la clave queda en el servidor) o directo desde el navegador con un *upload preset* firmado. En los dos casos hay que **quitar los datos GPS/EXIF** ([REGLAS.md](REGLAS.md)).
+**Decidido: la foto se sube desde la API.** Las claves de Cloudinary quedan solo en el servidor (`api/.env`), nunca en el navegador.
+1. El frontend manda la foto **junto con el reporte** en `POST /api/reportes` (`multipart/form-data`, campo `foto`). No hay un endpoint aparte para fotos.
+2. La API valida que sea JPG, PNG o WebP de máximo 5 MB, la endereza, la reduce a 1600 px y la convierte a JPEG.
+3. La API **quita todos los metadatos (EXIF/GPS)**.
+4. La API la sube a Cloudinary y guarda `foto_url` y `foto_id`.
+5. Si un moderador elimina el reporte, la API también borra la foto de Cloudinary.
+
+Sin las credenciales de Cloudinary en el `.env`, los reportes se guardan sin foto. Detalle en [API.md](API.md) y en [api/README.md](../../api/README.md).
 
 ### Login de moderadores: bcrypt + JWT (propuesto)
 **Para qué:** que solo el equipo entre al panel de moderación.
