@@ -20,9 +20,9 @@ React + TypeScript, Tailwind (tokens del tema), React Router (`<Link>`) y `src/l
 
 | | Método | Ruta | Para qué |
 |---|---|---|---|
-| ⏳ | GET | `/api/estadisticas` | Cifras de la franja (vista `v_estadisticas` → tipo `Estadisticas`) |
-| ⏳ | GET | `/api/reportes?limite=3` | Reportes recientes (vista `v_reportes_publicos` → `ReportePublico[]`) |
-| ⏳ | GET | `/api/aliados` | Logos de la caja de aliados (opcional) |
+| ✅ | GET | `/api/estadisticas` | Cifras de la franja → `Estadisticas` |
+| ✅ | GET | `/api/reportes?limite=3` | Los 3 reportes aprobados más recientes → `ReportePublico[]` |
+| ✅ | GET | `/api/aliados` | Logos de la caja de aliados (opcional) → `Aliado[]` |
 
 Detalle en [docs/API.md](../../../docs/API.md).
 
@@ -35,5 +35,5 @@ Detalle en [docs/API.md](../../../docs/API.md).
 
 ## Notas
 
-- Si `casos_atendidos` o `reportes_semana` llegan como `null` (todavía no hay reportes aprobados), muestra **0**.
+- `/api/estadisticas` siempre devuelve números: si todavía no hay reportes aprobados, las cifras valen `0`.
 - El cartel "SE BUSCA" lo van a usar también Adopciones y Ficha: hazlo en `src/components/`.

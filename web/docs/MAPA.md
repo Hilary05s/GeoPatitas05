@@ -74,4 +74,4 @@ Recomendación: **opción 1**. Hay que validarlo con quien diseña.
 - **Capas:** los controles de Leaflet usan `z-index: 1000`. El encabezado del sitio tiene `z-[1100]` para quedar encima al hacer scroll. No subir el z-index del mapa.
 - **Carga diferida:** conviene cargar la página del mapa con `React.lazy`, para que Leaflet no se descargue en la portada.
 - **Altura:** el contenedor necesita una altura definida. En el diseño son 680 px en escritorio y 520 px en el celular.
-- **Datos:** `GET /api/zonas` ✅ y `GET /api/reportes` ⏳ (ver [API.md](API.md)).
+- **Datos:** `GET /api/zonas` ✅ y `GET /api/reportes` ✅ (filtros `?estado=&zona=`, paginado con `X-Total-Count`; ver [API.md](API.md)). Cada reporte trae `lat_centro` y `lng_centro`, que son el centro de su zona, nunca la ubicación del perrito.

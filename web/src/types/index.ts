@@ -2,3 +2,4 @@
 export type * from './comunes';
 export type * from './tablas';
 export type * from './vistas';
+export type * from './respuestas';

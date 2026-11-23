@@ -1,0 +1,254 @@
+###############################################################
+# GeoPatitas API — peticiones de prueba
+#
+# Cómo usarlo: en VS Code instala la extensión "REST Client"
+# (humao.rest-client) y presiona "Send Request" sobre cada petición.
+# También funciona en los clientes HTTP de JetBrains.
+#
+# Antes: XAMPP con MySQL encendido y `pnpm dev` en api/.
+# Con sql/datos-prueba.sql cargado (solo en local) hay datos para probar.
+#
+# Secciones:
+#   1 · Estado y zonas
+#   2 · Lecturas públicas (reportes, seguimiento, adopciones, aliados, estadísticas)
+#   3 · Crear reporte (JSON o con foto)
+#   4 · Login de moderadores  ← pon tu correo y contraseña en @correo / @password
+#   5 · Moderación (pendientes, aprobar, eliminar, cambiar estado)
+#
+# Detalle de cada endpoint: web/docs/API.md
+###############################################################
+
+@base = http://localhost:3000/api
+
+
+###############################################################
+# 1 · Estado y zonas
+###############################################################
+
+### Estado de la API
+GET {{base}}
+
+### Zonas activas (centro aproximado de cada una)
+GET {{base}}/zonas
+
+### Ruta inexistente → 404 en JSON
+GET {{base}}/no-existe
+
+### JSON mal formado → 400
+POST {{base}}/zonas
+Content-Type: application/json
+
+{ "esto no es": json valido }
+
+
+###############################################################
+# 2 · Lecturas públicas
+# (con api/sql/datos-prueba.sql cargado hay datos para probar)
+###############################################################
+
+### Reportes aprobados (más nuevos primero). Total en la cabecera X-Total-Count
+GET {{base}}/reportes
+
+### Filtrar por estado del caso
+GET {{base}}/reportes?estado=necesita_ayuda
+
+### Filtrar por zona y paginar
+GET {{base}}/reportes?zona=2&limite=1&pagina=2
+
+### Filtro inválido → 400 con el detalle de cada campo
+GET {{base}}/reportes?estado=perdido&limite=500
+
+### Un reporte aprobado
+GET {{base}}/reportes/9001
+
+### Reporte pendiente o eliminado → 404 (no es público)
+GET {{base}}/reportes/9007
+
+### Id inválido → 400
+GET {{base}}/reportes/abc
+
+### Seguimiento del caso (línea de tiempo)
+GET {{base}}/reportes/9005/seguimiento
+
+### Adopciones disponibles
+GET {{base}}/adopciones
+
+### Adopciones filtradas
+GET {{base}}/adopciones?edad=cachorro&sexo=hembra
+
+### Aliados vigentes
+GET {{base}}/aliados
+
+### Solo veterinarias
+GET {{base}}/aliados?tipo=veterinaria
+
+### Cifras del inicio
+GET {{base}}/estadisticas
+
+
+###############################################################
+# 3 · Crear reporte (queda PENDIENTE de moderación)
+# Límites: 5 cada 10 min por IP y MAX_REPORTES_POR_IP_DIA en 24 h.
+# Si te sale 429 mientras pruebas, reinicia `pnpm dev`.
+###############################################################
+
+### Crear reporte sin foto (JSON). Cambia la fecha por una de este año.
+POST {{base}}/reportes
+Content-Type: application/json
+
+{
+  "zona_id": 1,
+  "nombre": "Firulais",
+  "raza_aprox": "Mestizo",
+  "color": "Café con blanco",
+  "tamano": "mediano",
+  "es_cachorro": false,
+  "salud": "herido",
+  "descripcion": "Collar azul, cojea de la pata trasera.",
+  "fecha_avistamiento": "2026-11-22",
+  "contacto": "555-000-0000"
+}
+
+### Crear reporte CON foto (multipart). La foto es opcional; JPG, PNG o WebP, máx. 5 MB.
+# Sin credenciales de Cloudinary se crea sin foto y la respuesta trae "aviso".
+POST {{base}}/reportes
+Content-Type: multipart/form-data; boundary=GeoPatitas
+
+--GeoPatitas
+Content-Disposition: form-data; name="zona_id"
+
+2
+--GeoPatitas
+Content-Disposition: form-data; name="color"
+
+Negro
+--GeoPatitas
+Content-Disposition: form-data; name="tamano"
+
+grande
+--GeoPatitas
+Content-Disposition: form-data; name="salud"
+
+desnutrido
+--GeoPatitas
+Content-Disposition: form-data; name="es_cachorro"
+
+false
+--GeoPatitas
+Content-Disposition: form-data; name="fecha_avistamiento"
+
+2026-11-22
+--GeoPatitas
+Content-Disposition: form-data; name="foto"; filename="perrito.png"
+Content-Type: image/png
+
+< ../icons/icon-512.png
+--GeoPatitas--
+
+### Coordenadas exactas → 400 (lat y lng no se aceptan nunca)
+POST {{base}}/reportes
+Content-Type: application/json
+
+{
+  "zona_id": 1, "color": "Café", "tamano": "mediano", "salud": "sano",
+  "fecha_avistamiento": "2026-11-22",
+  "lat": 21.8123, "lng": -105.2087
+}
+
+### Datos inválidos → 400 con el detalle por campo
+POST {{base}}/reportes
+Content-Type: application/json
+
+{
+  "zona_id": 99, "color": "", "tamano": "chico", "salud": "sano",
+  "fecha_avistamiento": "2099-01-01"
+}
+
+
+###############################################################
+# 4 · Login de moderadores
+# Antes: crea un moderador con `pnpm crear-moderador` y pon aquí
+# su correo y contraseña (NO subas este archivo con datos reales).
+# Límite: 5 intentos fallidos cada 15 min por IP.
+###############################################################
+
+@correo = tu-correo@ejemplo.com
+@password = tu-contraseña
+
+### Iniciar sesión → guarda el token para las siguientes peticiones
+# @name login
+POST {{base}}/auth/login
+Content-Type: application/json
+
+{
+  "correo": "{{correo}}",
+  "password": "{{password}}"
+}
+
+###
+@token = {{login.response.body.token}}
+
+### ¿Quién soy? (verifica que el token siga siendo válido)
+GET {{base}}/auth/yo
+Authorization: Bearer {{token}}
+
+### Sin token → 401
+GET {{base}}/auth/yo
+
+### Credenciales incorrectas → 401 (mismo mensaje exista o no el correo)
+POST {{base}}/auth/login
+Content-Type: application/json
+
+{
+  "correo": "nadie@ejemplo.com",
+  "password": "Incorrecta123"
+}
+
+
+###############################################################
+# 5 · Moderación (todas requieren el token de la sección 4)
+# Ejecuta primero "Iniciar sesión" (sección 4) para llenar {{token}}.
+# Con datos-prueba.sql: 9007 y 9008 están pendientes.
+###############################################################
+
+### Cola de reportes pendientes (del más antiguo al más nuevo). Total en X-Total-Count
+GET {{base}}/moderacion/pendientes
+Authorization: Bearer {{token}}
+
+### Aprobar un reporte pendiente (la nota es interna y opcional)
+PATCH {{base}}/moderacion/reportes/9007/aprobar
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "nota": "Revisado: foto y datos coherentes"
+}
+
+### Eliminar un reporte (motivo obligatorio: falso | duplicado | ofensivo | fuera_de_tema | otro)
+# duplicado_de solo con motivo "duplicado". Si tiene foto, se borra de Cloudinary.
+PATCH {{base}}/moderacion/reportes/9008/eliminar
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "motivo": "duplicado",
+  "duplicado_de": 9004,
+  "nota": "Mismos cachorros que el reporte 9004"
+}
+
+### Cambiar el estado del caso de un reporte publicado (queda en `seguimiento`)
+# ⚠️ La nota SE PUBLICA en la línea de tiempo de la ficha.
+PATCH {{base}}/reportes/9001/estado
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "estado_nuevo": "en_seguimiento",
+  "nota": "Una rescatista lo está alimentando."
+}
+
+### Ver la línea de tiempo pública después del cambio
+GET {{base}}/reportes/9001/seguimiento
+
+### Sin token → 401
+GET {{base}}/moderacion/pendientes

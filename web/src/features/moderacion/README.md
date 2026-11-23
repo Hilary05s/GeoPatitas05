@@ -22,12 +22,13 @@ Todos, salvo el login, requieren `Authorization: Bearer <token>`.
 
 | | Método | Ruta | Para qué |
 |---|---|---|---|
-| ⏳ | POST | `/api/auth/login` | `{ correo, password }` → `{ token, moderador }` |
-| ⏳ | GET | `/api/moderacion/resumen` | Contadores → `{ pendientes, aprobados, eliminados }` |
-| ⏳ | GET | `/api/moderacion/reportes?estado=pendiente` | Cola → `Reporte[]` (tabla completa, más el nombre de la zona) |
-| ⏳ | PATCH | `/api/moderacion/reportes/:id/aprobar` | Aprobar (se guarda en `moderaciones`) |
-| ⏳ | PATCH | `/api/moderacion/reportes/:id/eliminar` | `{ motivo, nota? }`. El motivo es obligatorio |
-| ⏳ | PATCH | `/api/moderacion/reportes/:id/estado` | `{ estado_nuevo, nota? }` (se guarda en `seguimiento`) |
+| ✅ | POST | `/api/auth/login` | `CredencialesLogin` → `RespuestaLogin` (`{ token, expira_en, moderador }`) · `401` con mensaje único si falla |
+| ✅ | GET | `/api/auth/yo` | Moderador dueño del token → `Moderador`. Úsalo al abrir el panel: si da `401`, manda al login |
+| ✅ | GET | `/api/moderacion/pendientes` | Cola, del más antiguo al más nuevo → `ReportePendiente[]` (incluye `contacto`, `zona`, `folio` y `envios_misma_ip_24h`). Paginado; total en `X-Total-Count` |
+| ✅ | PATCH | `/api/moderacion/reportes/:id/aprobar` | `{ nota? }` (interna). Solo reportes pendientes; `409` si ya fue moderado. Se guarda en `moderaciones` |
+| ✅ | PATCH | `/api/moderacion/reportes/:id/eliminar` | `{ motivo, nota?, duplicado_de? }`. El motivo es obligatorio; `duplicado_de` solo con motivo `duplicado`. Sirve también para reportes ya publicados. Borra la foto de Cloudinary → `{ …, foto_borrada, aviso? }` |
+| ✅ | PATCH | `/api/reportes/:id/estado` | `{ estado_nuevo, nota? }`. Ojo: la ruta es `/api/reportes/…`, no `/api/moderacion/…`. Solo reportes aprobados. Se guarda en `seguimiento`. ⚠️ **La nota es pública** |
+| ⏳ | GET | `/api/moderacion/resumen` | Contadores → `{ pendientes, aprobados, eliminados }`. Mientras no exista, "Pendientes" sale de `X-Total-Count` |
 | ⏳ | GET / PATCH | `/api/moderacion/adopciones…` | Lo mismo para adopciones |
 | ⏳ | GET | `/api/moderacion/avisos` | Avisos sin revisar |
 
@@ -41,6 +42,9 @@ Todos, salvo el login, requieren `Authorization: Bearer <token>`.
 ## Notas
 
 - Motivos de eliminación (`MotivoModeracion`): `falso | duplicado | ofensivo | fuera_de_tema | otro`.
+- ⚠️ **La nota del cambio de estado se publica** en la línea de tiempo de la ficha. Pon un aviso junto a ese campo: nada de nombres, teléfonos, domicilios ni ubicaciones exactas. Las notas de aprobar y eliminar son internas.
+- Los moderadores se crean desde la terminal con `pnpm crear-moderador`, en `api/`. No hay registro en la web.
+- Detalle de cada endpoint, con ejemplos: [docs/API.md → Moderación](../../../docs/API.md).
 - 🔒 El token se guarda en memoria o en `sessionStorage`, **nunca** en el código. Al cerrar sesión se borra.
 - 🔒 La seguridad real está en la API: ocultar el panel en el frontend **no** protege nada.
 - Esta página **no** está en el menú principal; se entra desde el enlace del pie de página.
