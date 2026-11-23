@@ -12,6 +12,13 @@ export const EDADES = ['cachorro', 'adulto', 'mayor'] as const;
 export const TIPOS_ALIADO = ['veterinaria', 'negocio'] as const;
 export const MOTIVOS_MODERACION = ['falso', 'duplicado', 'ofensivo', 'fuera_de_tema', 'otro'] as const;
 
+/** Texto opcional: recorta espacios y convierte "" en undefined (los formularios mandan ""). */
+export const textoOpcional = (maximo: number) =>
+  z.preprocess(
+    (valor) => (typeof valor === 'string' && valor.trim() === '' ? undefined : valor),
+    z.string().trim().max(maximo).optional(),
+  );
+
 /** Id numérico en la URL: /reportes/:id */
 export const idParam = z.object({
   id: z.coerce.number().int().positive(),

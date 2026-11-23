@@ -193,3 +193,52 @@ Content-Type: application/json
   "correo": "nadie@ejemplo.com",
   "password": "Incorrecta123"
 }
+
+
+###############################################################
+# FASE 5 · Moderación (todas requieren el token de la Fase 4)
+# Ejecuta primero "Iniciar sesión" de la Fase 4 para llenar {{token}}.
+# Con datos-prueba.sql: 9007 y 9008 están pendientes.
+###############################################################
+
+### Cola de reportes pendientes (del más antiguo al más nuevo). Total en X-Total-Count
+GET {{base}}/moderacion/pendientes
+Authorization: Bearer {{token}}
+
+### Aprobar un reporte pendiente (la nota es interna y opcional)
+PATCH {{base}}/moderacion/reportes/9007/aprobar
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "nota": "Revisado: foto y datos coherentes"
+}
+
+### Eliminar un reporte (motivo obligatorio: falso | duplicado | ofensivo | fuera_de_tema | otro)
+# duplicado_de solo con motivo "duplicado". Si tiene foto, se borra de Cloudinary.
+PATCH {{base}}/moderacion/reportes/9008/eliminar
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "motivo": "duplicado",
+  "duplicado_de": 9004,
+  "nota": "Mismos cachorros que el reporte 9004"
+}
+
+### Cambiar el estado del caso de un reporte publicado (queda en `seguimiento`)
+# ⚠️ La nota SE PUBLICA en la línea de tiempo de la ficha.
+PATCH {{base}}/reportes/9001/estado
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "estado_nuevo": "en_seguimiento",
+  "nota": "Una rescatista lo está alimentando."
+}
+
+### Ver la línea de tiempo pública después del cambio
+GET {{base}}/reportes/9001/seguimiento
+
+### Sin token → 401
+GET {{base}}/moderacion/pendientes

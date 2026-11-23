@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-import { ESTADOS_CASO, SALUDES, TAMANOS, paginacion } from './comunes.js';
+import { ESTADOS_CASO, SALUDES, TAMANOS, paginacion, textoOpcional } from './comunes.js';
 
 /** GET /api/reportes?estado=&zona=&limite=&pagina= */
 export const filtrosReportes = paginacion.extend({
@@ -9,13 +9,6 @@ export const filtrosReportes = paginacion.extend({
 });
 
 // ---------- POST /api/reportes ----------
-
-/** Texto opcional: recorta espacios y convierte "" en undefined (los formularios mandan ""). */
-const textoOpcional = (maximo: number) =>
-  z.preprocess(
-    (valor) => (typeof valor === 'string' && valor.trim() === '' ? undefined : valor),
-    z.string().trim().max(maximo).optional(),
-  );
 
 /** Acepta true/false, 1/0 y "true"/"false"/"1"/"0"/"on" (multipart manda texto). Devuelve 0 o 1. */
 const booleanoBD = z

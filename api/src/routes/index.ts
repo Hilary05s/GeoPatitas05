@@ -1,6 +1,7 @@
 import { Router } from 'express';
 
 import { authRouter } from './auth.routes.js';
+import { moderacionRouter } from './moderacion.routes.js';
 import { publicasRouter } from './publicas.routes.js';
 import { reportesRouter } from './reportes.routes.js';
 import { zonasRouter } from './zonas.routes.js';
@@ -15,4 +16,5 @@ rutas.get('/', (_req, res) => {
 rutas.use('/zonas', zonasRouter);
 rutas.use('/reportes', reportesRouter);
 rutas.use('/auth', authRouter);
+rutas.use('/moderacion', moderacionRouter);
 rutas.use('/', publicasRouter); // /adopciones, /aliados, /estadisticas

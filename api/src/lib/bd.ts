@@ -1,4 +1,4 @@
-import mysql from 'mysql2/promise'; // librería para hablar con MySQL
+import mysql, { type PoolConnection } from 'mysql2/promise'; // librería para hablar con MySQL
 
 import { config } from './config.js';
 
@@ -22,6 +22,25 @@ export const pool = mysql.createPool({
   connectionLimit: 10,
   charset: 'utf8mb4',
 });
+
+/**
+ * Ejecuta varias consultas como una sola operación: si algo falla, se deshace todo.
+ *   const r = await enTransaccion(async (con) => { await con.query(...); ... return algo; });
+ */
+export async function enTransaccion<T>(trabajo: (conexion: PoolConnection) => Promise<T>): Promise<T> {
+  const conexion = await pool.getConnection();
+  try {
+    await conexion.beginTransaction();
+    const resultado = await trabajo(conexion);
+    await conexion.commit();
+    return resultado;
+  } catch (error) {
+    await conexion.rollback().catch(() => undefined);
+    throw error;
+  } finally {
+    conexion.release();
+  }
+}
 
 /** Prueba la conexión al arrancar para avisar en consola si MySQL está apagado. */
 export async function verificarConexion() {
